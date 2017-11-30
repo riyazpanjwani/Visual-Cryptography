@@ -1,0 +1,79 @@
+clc;
+clear all;
+close all;
+a=imread('cameraman.tif');
+for i=1:256
+    for j=1:256
+        if(a(i,j)>250)
+            a(i,j)=250;
+        end
+    end
+end
+r=4;
+cnt=0;
+h=1;w=1;
+temp=zeros(1,r);
+for i=1:256
+    for j=1:256
+        temp(mod(cnt,4)+1)=a(i,j);
+        cnt = cnt + 1; 
+        if(mod(cnt,4)==0)
+             if(w<=256)
+                im1(h,w)=mod(polyval(fliplr(temp),10),251);
+                im2(h,w)=mod(polyval(fliplr(temp),20),251);
+                im3(h,w)=mod(polyval(fliplr(temp),30),251);
+                im4(h,w)=mod(polyval(fliplr(temp),40),251);
+                im5(h,w)=mod(polyval(fliplr(temp),50),251);
+                w=w+1;
+             else
+                 h=h+1;
+                 w=1;
+             end
+         end
+    end
+end
+figure()
+imshow(im1,[0 255])
+figure()
+imshow(im2,[0 255])
+figure()
+imshow(im3,[0 255])
+figure()
+imshow(im4,[0 255])
+figure()
+imshow(im5,[0 255])
+    
+
+clc
+cnt=0;
+x=0;
+xx = sym('x');
+cnt = 0;
+h = 1;
+w = 1;
+img = zeros(256,256);
+for i=1:64
+    for j=1:256
+         temp1=im1(i,j);
+         temp2=im2(i,j);
+         temp3=im3(i,j);
+         temp4=im4(i,j);
+         fi=[10 20 30 40];
+         fo=[temp1 temp2 temp3 temp4];
+         Poly = test(fi,fo,xx);
+         vec = sym2poly(Poly);
+         vec = fliplr(vec);
+         for k = 0:3
+            img(h,w+k) = mod(vec(k+1),251);
+         end 
+          w = w+ 4;
+          if (w >= 256) 
+              w = 1;
+              h = h+1;
+          end 
+    end 
+end 
+figure
+imshow(img,[1 255]);
+figure
+imshow(a,[1 255]);
